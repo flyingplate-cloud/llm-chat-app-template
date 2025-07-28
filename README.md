@@ -1,144 +1,251 @@
-# LLM Chat Application Template
+# Cloudflare Workers Nginx Default App
 
-A simple, ready-to-deploy chat application template powered by Cloudflare Workers AI. This template provides a clean starting point for building AI chat applications with streaming responses.
-
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/llm-chat-app-template)
-
-<!-- dash-content-start -->
-
-## Demo
-
-This template demonstrates how to build an AI-powered chat interface using Cloudflare Workers AI with streaming responses. It features:
-
-- Real-time streaming of AI responses using Server-Sent Events (SSE)
-- Easy customization of models and system prompts
-- Support for AI Gateway integration
-- Clean, responsive UI that works on mobile and desktop
+A lightweight nginx-like web server application built with Cloudflare Workers. This template provides a simple web server with static file serving, basic routing, and HTTP status handling.
 
 ## Features
 
-- 💬 Simple and responsive chat interface
-- ⚡ Server-Sent Events (SSE) for streaming responses
-- 🧠 Powered by Cloudflare Workers AI LLMs
-- 🛠️ Built with TypeScript and Cloudflare Workers
-- 📱 Mobile-friendly design
-- 🔄 Maintains chat history on the client
-<!-- dash-content-end -->
+- 🚀 **Static File Serving** - Serve HTML, CSS, JS, images, and other static files
+- 🔧 **API Endpoints** - Built-in API routes for status and debugging
+- 📊 **Health Checks** - Monitor server status and uptime
+- 🎨 **Modern UI** - Beautiful dashboard with real-time server information
+- ⚡ **Fast Performance** - Built on Cloudflare's global edge network
+- 🔒 **Security** - Automatic HTTPS and DDoS protection
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v18 or newer)
+- [Node.js](https://nodejs.org/) (v18 or later)
 - [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
-- A Cloudflare account with Workers AI access
 
 ### Installation
 
 1. Clone this repository:
-
-   ```bash
-   git clone https://github.com/cloudflare/templates.git
-   cd templates/llm-chat-app
-   ```
+```bash
+git clone <your-repo-url>
+cd nginx-default-worker
+```
 
 2. Install dependencies:
+```bash
+npm install
+```
 
-   ```bash
-   npm install
-   ```
-
-3. Generate Worker type definitions:
-   ```bash
-   npm run cf-typegen
-   ```
-
-### Development
-
-Start a local development server:
-
+3. Start the development server:
 ```bash
 npm run dev
 ```
 
-This will start a local server at http://localhost:8787.
-
-Note: Using Workers AI accesses your Cloudflare account even during local development, which will incur usage charges.
-
-### Deployment
-
-Deploy to Cloudflare Workers:
-
+4. Deploy to Cloudflare Workers:
 ```bash
 npm run deploy
 ```
 
-## Project Structure
+## Available Endpoints
+
+### Web Routes
+- `/` - Main dashboard page
+- `/health` - Health check endpoint (JSON)
+- `/server-info` - Server information (JSON)
+
+### API Routes
+- `/api/status` - API status and available endpoints
+- `/api/echo` - Echo request details for debugging
+
+## Configuration
+
+### Wrangler Configuration
+
+The `wrangler.jsonc` file contains the main configuration:
+
+```json
+{
+  "name": "nginx-default-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-01",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./public"
+  }
+}
+```
+
+### Environment Variables
+
+No environment variables are required for basic functionality. The application uses Cloudflare's built-in features for IP detection and geolocation.
+
+## Development
+
+### Project Structure
 
 ```
-/
-├── public/             # Static assets
-│   ├── index.html      # Chat UI HTML
-│   └── chat.js         # Chat UI frontend script
 ├── src/
-│   ├── index.ts        # Main Worker entry point
-│   └── types.ts        # TypeScript type definitions
-├── test/               # Test files
-├── wrangler.jsonc      # Cloudflare Worker configuration
-├── tsconfig.json       # TypeScript configuration
-└── README.md           # This documentation
+│   ├── index.ts          # Main worker code
+│   └── types.ts          # TypeScript type definitions
+├── public/
+│   └── index.html        # Main dashboard page
+├── wrangler.jsonc        # Wrangler configuration
+├── package.json          # Dependencies and scripts
+└── README.md            # This file
 ```
 
-## How It Works
+### Available Scripts
 
-### Backend
-
-The backend is built with Cloudflare Workers and uses the Workers AI platform to generate responses. The main components are:
-
-1. **API Endpoint** (`/api/chat`): Accepts POST requests with chat messages and streams responses
-2. **Streaming**: Uses Server-Sent Events (SSE) for real-time streaming of AI responses
-3. **Workers AI Binding**: Connects to Cloudflare's AI service via the Workers AI binding
-
-### Frontend
-
-The frontend is a simple HTML/CSS/JavaScript application that:
-
-1. Presents a chat interface
-2. Sends user messages to the API
-3. Processes streaming responses in real-time
-4. Maintains chat history on the client side
+- `npm run dev` - Start development server
+- `npm run deploy` - Deploy to Cloudflare Workers
+- `npm run check` - Type check and dry-run deployment
+- `npm test` - Run tests (if configured)
 
 ## Customization
 
-### Changing the Model
+### Adding Static Files
 
-To use a different AI model, update the `MODEL_ID` constant in `src/index.ts`. You can find available models in the [Cloudflare Workers AI documentation](https://developers.cloudflare.com/workers-ai/models/).
+Place any static files in the `public/` directory. They will be automatically served by the worker.
 
-### Using AI Gateway
+### Adding API Routes
 
-The template includes commented code for AI Gateway integration, which provides additional capabilities like rate limiting, caching, and analytics.
+To add new API routes, modify the `handleApiRoutes` function in `src/index.ts`:
 
-To enable AI Gateway:
+```typescript
+function handleApiRoutes(request: Request, path: string): Response {
+  switch (path) {
+    case '/api/your-endpoint':
+      return new Response(JSON.stringify({ message: 'Hello World' }), {
+        headers: { 'Content-Type': 'application/json' }
+      });
+    // ... existing routes
+  }
+}
+```
 
-1. [Create an AI Gateway](https://dash.cloudflare.com/?to=/:account/ai/ai-gateway) in your Cloudflare dashboard
-2. Uncomment the gateway configuration in `src/index.ts`
-3. Replace `YOUR_GATEWAY_ID` with your actual AI Gateway ID
-4. Configure other gateway options as needed:
-   - `skipCache`: Set to `true` to bypass gateway caching
-   - `cacheTtl`: Set the cache time-to-live in seconds
+### Custom Error Pages
 
-Learn more about [AI Gateway](https://developers.cloudflare.com/ai-gateway/).
+Modify the `ERROR_PAGES` object in `src/index.ts` to customize error pages:
 
-### Modifying the System Prompt
+```typescript
+const ERROR_PAGES = {
+  404: `<!DOCTYPE html>...`,
+  500: `<!DOCTYPE html>...`,
+  // Add more error pages as needed
+};
+```
 
-The default system prompt can be changed by updating the `SYSTEM_PROMPT` constant in `src/index.ts`.
+## Deployment
 
-### Styling
+### Manual Deployment
 
-The UI styling is contained in the `<style>` section of `public/index.html`. You can modify the CSS variables at the top to quickly change the color scheme.
+1. Install Wrangler CLI:
+```bash
+npm install -g wrangler
+```
 
-## Resources
+2. Login to Cloudflare:
+```bash
+wrangler login
+```
+
+3. Deploy the worker:
+```bash
+wrangler deploy
+```
+
+### Automatic Deployment
+
+The project includes GitHub Actions for automatic deployment. Simply push to the main branch to trigger deployment.
+
+## Monitoring
+
+### Built-in Monitoring
+
+The application includes several monitoring endpoints:
+
+- **Health Check**: `/health` - Returns server status
+- **Server Info**: `/server-info` - Returns detailed server information
+- **API Status**: `/api/status` - Returns API status and available endpoints
+
+### Cloudflare Analytics
+
+Enable Cloudflare Analytics in your dashboard to monitor:
+- Request volume
+- Response times
+- Error rates
+- Geographic distribution
+
+## Security
+
+### Built-in Security Features
+
+- **HTTPS Only**: All requests are automatically served over HTTPS
+- **DDoS Protection**: Cloudflare's global network provides DDoS protection
+- **Rate Limiting**: Configure rate limiting in Cloudflare dashboard
+- **Security Headers**: Automatic security headers are added
+
+### Custom Security
+
+Add custom security headers in the worker code:
+
+```typescript
+return new Response(content, {
+  headers: {
+    'Content-Type': 'text/html',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block'
+  }
+});
+```
+
+## Performance
+
+### Optimization Tips
+
+1. **Minimize Dependencies**: Keep the worker bundle size small
+2. **Use Caching**: Leverage Cloudflare's edge caching
+3. **Optimize Images**: Use WebP format and appropriate sizes
+4. **Compress Assets**: Enable gzip compression
+
+### Performance Monitoring
+
+Monitor performance using:
+- Cloudflare Analytics
+- Real User Monitoring (RUM)
+- Custom performance metrics
+
+## Troubleshooting
+
+### Common Issues
+
+1. **404 Errors**: Ensure static files are in the `public/` directory
+2. **Deployment Failures**: Check Wrangler configuration and credentials
+3. **Type Errors**: Run `npm run check` to verify TypeScript compilation
+
+### Debug Mode
+
+Enable debug logging by adding console.log statements:
+
+```typescript
+console.log('Request URL:', request.url);
+console.log('Request Method:', request.method);
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
 
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Cloudflare Workers AI Documentation](https://developers.cloudflare.com/workers-ai/)
-- [Workers AI Models](https://developers.cloudflare.com/workers-ai/models/)
+- [Wrangler CLI Documentation](https://developers.cloudflare.com/workers/wrangler/)
+- [Cloudflare Community](https://community.cloudflare.com/)
+
+---
+
+Built with ❤️ using Cloudflare Workers

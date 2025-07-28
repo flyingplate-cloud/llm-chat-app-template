@@ -1,23 +1,35 @@
 /**
- * Type definitions for the LLM chat application.
+ * Type definitions for the Nginx-like Cloudflare Worker
  */
 
 export interface Env {
-  /**
-   * Binding for the Workers AI API.
-   */
-  AI: Ai;
-
-  /**
-   * Binding for static assets.
-   */
-  ASSETS: { fetch: (request: Request) => Promise<Response> };
+  ASSETS: Fetcher;
 }
 
-/**
- * Represents a chat message.
- */
-export interface ChatMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
+export interface ServerInfo {
+  server: string;
+  version: string;
+  timestamp: string;
+  userAgent: string | null;
+  ip: string | null;
+  country: string | null;
+}
+
+export interface HealthStatus {
+  status: 'healthy';
+  timestamp: string;
+  worker: string;
+}
+
+export interface ApiStatus {
+  status: 'running';
+  uptime: number;
+  endpoints: string[];
+}
+
+export interface EchoResponse {
+  method: string;
+  url: string;
+  headers: Record<string, string>;
+  timestamp: string;
 }

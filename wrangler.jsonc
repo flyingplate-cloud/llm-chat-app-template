@@ -3,19 +3,16 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */ {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "llm-chat-app-template",
+  "name": "nginx-default-worker",
   "main": "src/index.ts",
   "compatibility_date": "2025-04-01",
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "compatibility_flags": ["nodejs_compat"],
   "assets": {
     "binding": "ASSETS",
     "directory": "./public"
   },
   "observability": {
     "enabled": true
-  },
-  "ai": {
-    "binding": "AI"
   },
   "upload_source_maps": true
 }
