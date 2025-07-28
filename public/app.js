@@ -1,301 +1,411 @@
 /**
- * Cloudflare Workers Nginx - Demo JavaScript
- * This file demonstrates static JavaScript serving
+ * CasaOS Cloudflare Worker - Frontend JavaScript
  */
 
-// Global configuration
-const CONFIG = {
-    apiBase: '/api',
-    endpoints: {
-        status: '/status',
-        echo: '/echo',
-        health: '/health',
-        serverInfo: '/server-info'
-    },
-    updateInterval: 30000 // 30 seconds
-};
+class CasaOSApp {
+    constructor() {
+        this.currentFilter = 'all';
+        this.apps = [];
+        this.systemInfo = {};
+        this.performanceStats = {};
+        this.init();
+    }
 
-// Utility functions
-const Utils = {
-    /**
-     * Format timestamp
-     */
-    formatTime: (timestamp) => {
-        return new Date(timestamp).toLocaleString();
-    },
+    async init() {
+        await this.loadData();
+        this.setupEventListeners();
+        this.startAutoRefresh();
+    }
 
-    /**
-     * Format uptime
-     */
-    formatUptime: (milliseconds) => {
-        const seconds = Math.floor(milliseconds / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
+    async loadData() {
+        try {
+            await Promise.all([
+                this.loadSystemInfo(),
+                this.loadApps(),
+                this.loadPerformanceStats()
+            ]);
+            this.updateUI();
+        } catch (error) {
+            console.error('Error loading data:', error);
+            this.showError('Failed to load data. Please refresh the page.');
+        }
+    }
+
+    async loadSystemInfo() {
+        const response = await fetch('/api/system');
+        this.systemInfo = await response.json();
+    }
+
+    async loadApps() {
+        const response = await fetch('/api/apps');
+        const data = await response.json();
+        this.apps = data.apps;
+    }
+
+    async loadPerformanceStats() {
+        const response = await fetch('/api/stats');
+        this.performanceStats = await response.json();
+    }
+
+    updateUI() {
+        this.updateSystemStats();
+        this.updateAppsGrid();
+        this.updatePerformanceMetrics();
+    }
+
+    updateSystemStats() {
+        const { systemInfo } = this;
         
-        let uptimeStr = '';
-        if (days > 0) uptimeStr += `${days}d `;
-        if (hours % 24 > 0) uptimeStr += `${hours % 24}h `;
-        if (minutes % 60 > 0) uptimeStr += `${minutes % 60}m `;
-        uptimeStr += `${seconds % 60}s`;
-        
-        return uptimeStr;
-    },
+        // CPU Usage
+        const cpuElement = document.getElementById('cpu-usage');
+        if (cpuElement) {
+            cpuElement.textContent = `${systemInfo.cpu?.usage?.toFixed(1) || 0}%`;
+        }
 
-    /**
-     * Show notification
-     */
-    showNotification: (message, type = 'info') => {
+        // Memory Usage
+        const memoryElement = document.getElementById('memory-usage');
+        if (memoryElement && systemInfo.memory) {
+            const used = systemInfo.memory.used;
+            const total = systemInfo.memory.total;
+            const percentage = ((used / total) * 100).toFixed(1);
+            memoryElement.textContent = `${percentage}%`;
+        }
+
+        // Storage Usage
+        const storageElement = document.getElementById('storage-usage');
+        if (storageElement && systemInfo.storage) {
+            const used = systemInfo.storage.used;
+            const total = systemInfo.storage.total;
+            const percentage = ((used / total) * 100).toFixed(1);
+            storageElement.textContent = `${percentage}%`;
+        }
+
+        // Network Connections
+        const networkElement = document.getElementById('network-connections');
+        if (networkElement) {
+            networkElement.textContent = systemInfo.network?.connections || 0;
+        }
+    }
+
+    updateAppsGrid() {
+        const appsGrid = document.getElementById('apps-grid');
+        if (!appsGrid) return;
+
+        const filteredApps = this.filterApps(this.apps, this.currentFilter);
+        
+        appsGrid.innerHTML = filteredApps.map(app => this.createAppCard(app)).join('');
+        
+        // Add event listeners to app cards
+        appsGrid.querySelectorAll('.app-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.app-actions')) {
+                    this.showAppDetails(card.dataset.appId);
+                }
+            });
+        });
+    }
+
+    filterApps(apps, filter) {
+        if (filter === 'all') return apps;
+        return apps.filter(app => app.status === filter);
+    }
+
+    createAppCard(app) {
+        const statusClass = `app-status ${app.status}`;
+        const statusText = app.status.charAt(0).toUpperCase() + app.status.slice(1);
+        
+        return `
+            <div class="app-card" data-app-id="${app.id}">
+                <div class="app-header">
+                    <div class="app-icon">${app.icon}</div>
+                    <div class="app-info">
+                        <h3>${app.name}</h3>
+                        <p class="app-description">${app.description}</p>
+                    </div>
+                </div>
+                <div class="${statusClass}">
+                    <i class="fas fa-circle"></i>
+                    ${statusText}
+                </div>
+                <div class="app-actions">
+                    ${this.createAppActions(app)}
+                </div>
+            </div>
+        `;
+    }
+
+    createAppActions(app) {
+        const actions = [];
+        
+        if (app.status === 'running') {
+            actions.push(`
+                <button class="btn btn-danger" onclick="appManager.stopApp('${app.id}')">
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+            `);
+        } else {
+            actions.push(`
+                <button class="btn btn-success" onclick="appManager.startApp('${app.id}')">
+                    <i class="fas fa-play"></i> Start
+                </button>
+            `);
+        }
+        
+        actions.push(`
+            <button class="btn btn-secondary" onclick="appManager.restartApp('${app.id}')">
+                <i class="fas fa-redo"></i> Restart
+            </button>
+        `);
+        
+        return actions.join('');
+    }
+
+    updatePerformanceMetrics() {
+        const { performanceStats } = this;
+        
+        // Response Time
+        const responseTimeElement = document.getElementById('response-time');
+        if (responseTimeElement && performanceStats.performance) {
+            responseTimeElement.textContent = `${performanceStats.performance.responseTime?.toFixed(1) || 0}ms`;
+        }
+
+        // Requests per second
+        const requestsElement = document.getElementById('requests-per-sec');
+        if (requestsElement && performanceStats.performance) {
+            requestsElement.textContent = `${Math.round(performanceStats.performance.requestsPerSecond || 0)}/s`;
+        }
+
+        // Error Rate
+        const errorRateElement = document.getElementById('error-rate');
+        if (errorRateElement && performanceStats.performance) {
+            errorRateElement.textContent = `${performanceStats.performance.errorRate?.toFixed(2) || 0}%`;
+        }
+    }
+
+    setupEventListeners() {
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.currentFilter = e.target.dataset.filter;
+                this.updateAppsGrid();
+            });
+        });
+
+        // Refresh button
+        const refreshBtn = document.querySelector('.btn-secondary');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => this.refreshData());
+        }
+    }
+
+    async refreshData() {
+        const refreshBtn = document.querySelector('.btn-secondary i');
+        if (refreshBtn) {
+            refreshBtn.classList.add('fa-spin');
+        }
+        
+        await this.loadData();
+        
+        if (refreshBtn) {
+            refreshBtn.classList.remove('fa-spin');
+        }
+    }
+
+    startAutoRefresh() {
+        // Refresh data every 30 seconds
+        setInterval(() => {
+            this.loadData();
+        }, 30000);
+    }
+
+    showAppDetails(appId) {
+        const app = this.apps.find(a => a.id === appId);
+        if (!app) return;
+
+        const modal = document.getElementById('app-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+
+        modalTitle.textContent = app.name;
+        modalBody.innerHTML = this.createAppDetailsHTML(app);
+        
+        modal.style.display = 'block';
+    }
+
+    createAppDetailsHTML(app) {
+        return `
+            <div class="app-details">
+                <div class="detail-row">
+                    <strong>Status:</strong>
+                    <span class="status-badge ${app.status}">${app.status}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Description:</strong>
+                    <span>${app.description}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Version:</strong>
+                    <span>${app.version}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Category:</strong>
+                    <span>${app.category}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Port:</strong>
+                    <span>${app.port}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>URL:</strong>
+                    <a href="${app.url}" target="_blank">${app.url}</a>
+                </div>
+                <div class="detail-row">
+                    <strong>Last Updated:</strong>
+                    <span>${new Date(app.lastUpdated).toLocaleString()}</span>
+                </div>
+            </div>
+            <div class="app-actions-modal">
+                <button class="btn btn-primary" onclick="appManager.openApp('${app.id}')">
+                    <i class="fas fa-external-link-alt"></i> Open App
+                </button>
+                ${app.status === 'running' ? 
+                    `<button class="btn btn-danger" onclick="appManager.stopApp('${app.id}')">
+                        <i class="fas fa-stop"></i> Stop App
+                    </button>` :
+                    `<button class="btn btn-success" onclick="appManager.startApp('${app.id}')">
+                        <i class="fas fa-play"></i> Start App
+                    </button>`
+                }
+            </div>
+        `;
+    }
+
+    showError(message) {
+        // Create a simple error notification
         const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        // Add styles
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem;
-            border-radius: 5px;
+            background: #f44336;
             color: white;
-            font-weight: bold;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         `;
-        
-        if (type === 'success') {
-            notification.style.background = '#28a745';
-        } else if (type === 'error') {
-            notification.style.background = '#dc3545';
-        } else {
-            notification.style.background = '#17a2b8';
-        }
-        
+        notification.textContent = message;
         document.body.appendChild(notification);
         
-        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+}
+
+// App Manager for handling app actions
+class AppManager {
+    async startApp(appId) {
+        try {
+            const response = await fetch(`/api/apps/start?id=${appId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification(`App ${appId} started successfully`, 'success');
+                appManager.refreshData();
+            } else {
+                this.showNotification(`Failed to start app ${appId}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error starting app:', error);
+            this.showNotification(`Error starting app ${appId}`, 'error');
+        }
+    }
+
+    async stopApp(appId) {
+        try {
+            const response = await fetch(`/api/apps/stop?id=${appId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification(`App ${appId} stopped successfully`, 'success');
+                appManager.refreshData();
+            } else {
+                this.showNotification(`Failed to stop app ${appId}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error stopping app:', error);
+            this.showNotification(`Error stopping app ${appId}`, 'error');
+        }
+    }
+
+    async restartApp(appId) {
+        try {
+            const response = await fetch(`/api/apps/restart?id=${appId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                this.showNotification(`App ${appId} restarted successfully`, 'success');
+                appManager.refreshData();
+            } else {
+                this.showNotification(`Failed to restart app ${appId}`, 'error');
+            }
+        } catch (error) {
+            console.error('Error restarting app:', error);
+            this.showNotification(`Error restarting app ${appId}`, 'error');
+        }
+    }
+
+    openApp(appId) {
+        const app = appManager.apps.find(a => a.id === appId);
+        if (app && app.url) {
+            window.open(app.url, '_blank');
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3'};
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
         setTimeout(() => {
             notification.remove();
         }, 3000);
     }
-};
+}
 
-// API client
-const API = {
-    /**
-     * Make API request
-     */
-    async request(endpoint, options = {}) {
-        try {
-            const response = await fetch(`${CONFIG.apiBase}${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
-                ...options
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            return await response.json();
-        } catch (error) {
-            console.error('API request failed:', error);
-            Utils.showNotification(`API Error: ${error.message}`, 'error');
-            throw error;
-        }
-    },
+// Global functions
+function closeModal() {
+    document.getElementById('app-modal').style.display = 'none';
+}
 
-    /**
-     * Get server status
-     */
-    async getStatus() {
-        return this.request(CONFIG.endpoints.status);
-    },
+function refreshData() {
+    appManager.refreshData();
+}
 
-    /**
-     * Echo request details
-     */
-    async echo(data = {}) {
-        return this.request(CONFIG.endpoints.echo, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    },
-
-    /**
-     * Get health status
-     */
-    async getHealth() {
-        const response = await fetch('/health');
-        return response.json();
-    },
-
-    /**
-     * Get server info
-     */
-    async getServerInfo() {
-        const response = await fetch('/server-info');
-        return response.json();
-    }
-};
-
-// Dashboard functionality
-const Dashboard = {
-    /**
-     * Initialize dashboard
-     */
-    init() {
-        console.log('🚀 Cloudflare Workers Nginx Dashboard initialized');
-        this.updateServerInfo();
-        this.startUptimeCounter();
-        this.setupEventListeners();
-        
-        // Update server info periodically
-        setInterval(() => {
-            this.updateServerInfo();
-        }, CONFIG.updateInterval);
-    },
-
-    /**
-     * Update server information
-     */
-    async updateServerInfo() {
-        try {
-            const serverInfo = await API.getServerInfo();
-            this.displayServerInfo(serverInfo);
-        } catch (error) {
-            console.error('Failed to update server info:', error);
-        }
-    },
-
-    /**
-     * Display server information
-     */
-    displayServerInfo(data) {
-        const serverInfoElement = document.getElementById('server-info');
-        if (!serverInfoElement) return;
-
-        serverInfoElement.innerHTML = `
-            <div class="info-item">
-                <div class="info-label">Server</div>
-                <div class="info-value">${data.server}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Version</div>
-                <div class="info-value">${data.version}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">IP Address</div>
-                <div class="info-value">${data.ip || 'Unknown'}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Country</div>
-                <div class="info-value">${data.country || 'Unknown'}</div>
-            </div>
-        `;
-    },
-
-    /**
-     * Start uptime counter
-     */
-    startUptimeCounter() {
-        const startTime = Date.now();
-        const uptimeElement = document.getElementById('uptime');
-        
-        if (!uptimeElement) return;
-        
-        setInterval(() => {
-            const uptime = Date.now() - startTime;
-            uptimeElement.textContent = Utils.formatUptime(uptime);
-        }, 1000);
-    },
-
-    /**
-     * Setup event listeners
-     */
-    setupEventListeners() {
-        // Test API button
-        const testApiBtn = document.getElementById('test-api-btn');
-        if (testApiBtn) {
-            testApiBtn.addEventListener('click', async () => {
-                try {
-                    const result = await API.echo({
-                        message: 'Hello from dashboard!',
-                        timestamp: new Date().toISOString()
-                    });
-                    Utils.showNotification('API test successful!', 'success');
-                    console.log('API test result:', result);
-                } catch (error) {
-                    Utils.showNotification('API test failed!', 'error');
-                }
-            });
-        }
-
-        // Health check button
-        const healthCheckBtn = document.getElementById('health-check-btn');
-        if (healthCheckBtn) {
-            healthCheckBtn.addEventListener('click', async () => {
-                try {
-                    const health = await API.getHealth();
-                    Utils.showNotification(`Health: ${health.status}`, 'success');
-                    console.log('Health check result:', health);
-                } catch (error) {
-                    Utils.showNotification('Health check failed!', 'error');
-                }
-            });
-        }
-    }
-};
-
-// Performance monitoring
-const Performance = {
-    /**
-     * Track page load performance
-     */
-    trackPageLoad() {
-        if ('performance' in window) {
-            window.addEventListener('load', () => {
-                const perfData = performance.getEntriesByType('navigation')[0];
-                console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
-            });
-        }
-    },
-
-    /**
-     * Track API response times
-     */
-    async trackApiPerformance(apiCall) {
-        const start = performance.now();
-        try {
-            const result = await apiCall();
-            const duration = performance.now() - start;
-            console.log('API response time:', duration.toFixed(2), 'ms');
-            return result;
-        } catch (error) {
-            const duration = performance.now() - start;
-            console.log('API error time:', duration.toFixed(2), 'ms');
-            throw error;
-        }
-    }
-};
-
-// Initialize when DOM is ready
+// Initialize the application
+let appManager;
 document.addEventListener('DOMContentLoaded', () => {
-    Dashboard.init();
-    Performance.trackPageLoad();
-    
-    // Add some demo functionality
-    console.log('📊 Dashboard loaded successfully');
-    console.log('🔧 Available endpoints:', Object.values(CONFIG.endpoints));
+    appManager = new CasaOSApp();
 });
 
-// Export for global access
-window.NginxWorker = {
-    API,
-    Utils,
-    Dashboard,
-    Performance,
-    CONFIG
-};
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+    const modal = document.getElementById('app-modal');
+    if (e.target === modal) {
+        closeModal();
+    }
+});

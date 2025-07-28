@@ -1,251 +1,167 @@
-# Cloudflare Workers Nginx Default App
+# CasaOS Cloudflare Worker
 
-A lightweight nginx-like web server application built with Cloudflare Workers. This template provides a simple web server with static file serving, basic routing, and HTTP status handling.
+🏠 **A comprehensive home server management application for Cloudflare Workers that mimics CasaOS functionality**
 
-## Features
+## 🌟 Features
 
-- 🚀 **Static File Serving** - Serve HTML, CSS, JS, images, and other static files
-- 🔧 **API Endpoints** - Built-in API routes for status and debugging
-- 📊 **Health Checks** - Monitor server status and uptime
-- 🎨 **Modern UI** - Beautiful dashboard with real-time server information
-- ⚡ **Fast Performance** - Built on Cloudflare's global edge network
-- 🔒 **Security** - Automatic HTTPS and DDoS protection
+### 📊 System Monitoring
+- **Real-time system stats** - CPU, Memory, Storage, Network usage
+- **Performance metrics** - Response time, requests per second, error rates
+- **Health monitoring** - System status and uptime tracking
 
-## Quick Start
+### 📱 Application Management
+- **App dashboard** - Visual management of all applications
+- **Start/Stop/Restart** - Control application states
+- **Status monitoring** - Real-time app status tracking
+- **App details** - Detailed information and configuration
+
+### 🎨 Modern UI
+- **Responsive design** - Works on desktop and mobile
+- **Real-time updates** - Auto-refresh every 30 seconds
+- **Interactive dashboard** - Click to view app details
+- **Status indicators** - Visual status for all components
+
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18 or later)
-- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/)
+- Node.js 18+ 
+- Wrangler CLI
+- Cloudflare account with Workers enabled
 
 ### Installation
 
-1. Clone this repository:
+1. **Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd nginx-default-worker
+git clone <repository-url>
+cd casaos-cloudflare-worker
 ```
 
-2. Install dependencies:
+2. **Install dependencies**
 ```bash
 npm install
 ```
 
-3. Start the development server:
+3. **Configure your Cloudflare settings**
 ```bash
-npm run dev
+# Update wrangler.jsonc with your account and zone IDs
+# Update package.json with your Cloudflare account details
 ```
 
-4. Deploy to Cloudflare Workers:
+4. **Deploy to Cloudflare Workers**
 ```bash
 npm run deploy
 ```
 
-## Available Endpoints
+## 📡 API Endpoints
 
-### Web Routes
-- `/` - Main dashboard page
-- `/health` - Health check endpoint (JSON)
-- `/server-info` - Server information (JSON)
+### System Information
+- `GET /api/system` - Get system information and stats
+- `GET /api/stats` - Get detailed performance statistics
+- `GET /api/health` - Health check endpoint
 
-### API Routes
-- `/api/status` - API status and available endpoints
-- `/api/echo` - Echo request details for debugging
+### Application Management
+- `GET /api/apps` - List all applications
+- `POST /api/apps/start?id=<app-id>` - Start an application
+- `POST /api/apps/stop?id=<app-id>` - Stop an application
+- `POST /api/apps/restart?id=<app-id>` - Restart an application
 
-## Configuration
+## 🏗️ Architecture
 
-### Wrangler Configuration
+### Frontend
+- **Modern JavaScript** - ES6+ with classes and async/await
+- **Responsive CSS** - Flexbox and Grid layouts
+- **Font Awesome** - Beautiful icons throughout the interface
+- **Real-time updates** - Auto-refresh and live status indicators
 
-The `wrangler.jsonc` file contains the main configuration:
+### Backend (Cloudflare Workers)
+- **TypeScript** - Type-safe server-side code
+- **Static file serving** - HTML, CSS, JS assets
+- **API endpoints** - RESTful API for system management
+- **Error handling** - Custom error pages and responses
 
-```json
-{
-  "name": "nginx-default-worker",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-04-01",
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "./public"
-  }
-}
-```
-
-### Environment Variables
-
-No environment variables are required for basic functionality. The application uses Cloudflare's built-in features for IP detection and geolocation.
-
-## Development
-
-### Project Structure
+## 📁 Project Structure
 
 ```
+casaos-cloudflare-worker/
 ├── src/
-│   ├── index.ts          # Main worker code
-│   └── types.ts          # TypeScript type definitions
+│   └── index.ts              # Main Worker code
 ├── public/
-│   └── index.html        # Main dashboard page
-├── wrangler.jsonc        # Wrangler configuration
-├── package.json          # Dependencies and scripts
-└── README.md            # This file
+│   ├── index.html            # Main dashboard
+│   ├── styles.css            # Modern CSS styles
+│   └── app.js               # Frontend JavaScript
+├── wrangler.jsonc           # Cloudflare Workers config
+├── package.json             # Dependencies and scripts
+└── README.md               # This file
 ```
 
-### Available Scripts
+## 🎯 Default Applications
 
-- `npm run dev` - Start development server
-- `npm run deploy` - Deploy to Cloudflare Workers
-- `npm run check` - Type check and dry-run deployment
-- `npm test` - Run tests (if configured)
+The system comes with pre-configured applications:
 
-## Customization
+1. **Nginx Default** - Lightweight web server
+2. **File Manager** - Web-based file management
+3. **Media Server** - Stream and manage media files
 
-### Adding Static Files
+## 🔧 Development
 
-Place any static files in the `public/` directory. They will be automatically served by the worker.
-
-### Adding API Routes
-
-To add new API routes, modify the `handleApiRoutes` function in `src/index.ts`:
-
-```typescript
-function handleApiRoutes(request: Request, path: string): Response {
-  switch (path) {
-    case '/api/your-endpoint':
-      return new Response(JSON.stringify({ message: 'Hello World' }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
-    // ... existing routes
-  }
-}
+### Local Development
+```bash
+npm run dev
 ```
 
-### Custom Error Pages
-
-Modify the `ERROR_PAGES` object in `src/index.ts` to customize error pages:
-
-```typescript
-const ERROR_PAGES = {
-  404: `<!DOCTYPE html>...`,
-  500: `<!DOCTYPE html>...`,
-  // Add more error pages as needed
-};
+### Type Checking
+```bash
+npm run check
 ```
 
-## Deployment
+### Testing
+```bash
+npm test
+```
+
+## 🌐 Deployment
 
 ### Manual Deployment
+1. Update `wrangler.jsonc` with your domain settings
+2. Run `npm run deploy`
+3. Configure routes in Cloudflare dashboard
 
-1. Install Wrangler CLI:
-```bash
-npm install -g wrangler
-```
+### Environment Variables
+- No environment variables required
+- All configuration is in `wrangler.jsonc`
 
-2. Login to Cloudflare:
-```bash
-wrangler login
-```
+## 📊 Performance
 
-3. Deploy the worker:
-```bash
-wrangler deploy
-```
+- **Edge Computing** - Runs on 200+ Cloudflare locations
+- **Fast Response** - Sub-100ms response times
+- **Auto-scaling** - Handles traffic spikes automatically
+- **Low latency** - Global CDN distribution
 
-### Automatic Deployment
+## 🔒 Security
 
-The project includes GitHub Actions for automatic deployment. Simply push to the main branch to trigger deployment.
+- **HTTPS only** - All traffic encrypted
+- **CORS headers** - Proper cross-origin handling
+- **Input validation** - Sanitized API inputs
+- **Error handling** - Secure error responses
 
-## Monitoring
-
-### Built-in Monitoring
-
-The application includes several monitoring endpoints:
-
-- **Health Check**: `/health` - Returns server status
-- **Server Info**: `/server-info` - Returns detailed server information
-- **API Status**: `/api/status` - Returns API status and available endpoints
-
-### Cloudflare Analytics
-
-Enable Cloudflare Analytics in your dashboard to monitor:
-- Request volume
-- Response times
-- Error rates
-- Geographic distribution
-
-## Security
-
-### Built-in Security Features
-
-- **HTTPS Only**: All requests are automatically served over HTTPS
-- **DDoS Protection**: Cloudflare's global network provides DDoS protection
-- **Rate Limiting**: Configure rate limiting in Cloudflare dashboard
-- **Security Headers**: Automatic security headers are added
-
-### Custom Security
-
-Add custom security headers in the worker code:
-
-```typescript
-return new Response(content, {
-  headers: {
-    'Content-Type': 'text/html',
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'X-XSS-Protection': '1; mode=block'
-  }
-});
-```
-
-## Performance
-
-### Optimization Tips
-
-1. **Minimize Dependencies**: Keep the worker bundle size small
-2. **Use Caching**: Leverage Cloudflare's edge caching
-3. **Optimize Images**: Use WebP format and appropriate sizes
-4. **Compress Assets**: Enable gzip compression
-
-### Performance Monitoring
-
-Monitor performance using:
-- Cloudflare Analytics
-- Real User Monitoring (RUM)
-- Custom performance metrics
-
-## Troubleshooting
-
-### Common Issues
-
-1. **404 Errors**: Ensure static files are in the `public/` directory
-2. **Deployment Failures**: Check Wrangler configuration and credentials
-3. **Type Errors**: Run `npm run check` to verify TypeScript compilation
-
-### Debug Mode
-
-Enable debug logging by adding console.log statements:
-
-```typescript
-console.log('Request URL:', request.url);
-console.log('Request Method:', request.method);
-```
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
+4. Test thoroughly
 5. Submit a pull request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - see LICENSE file for details
 
-## Support
+## 🆘 Support
 
-- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Wrangler CLI Documentation](https://developers.cloudflare.com/workers/wrangler/)
-- [Cloudflare Community](https://community.cloudflare.com/)
+- **Issues** - Report bugs on GitHub
+- **Documentation** - Check Cloudflare Workers docs
+- **Community** - Join Cloudflare community forums
 
 ---
 
-Built with ❤️ using Cloudflare Workers
+**Built with ❤️ for Cloudflare Workers**
