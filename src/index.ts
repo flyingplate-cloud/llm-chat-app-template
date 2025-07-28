@@ -123,7 +123,7 @@ export default {
         return new Response(JSON.stringify({
           status: 'healthy',
           timestamp: new Date().toISOString(),
-          worker: 'nginx-default'
+          worker: 'nginx-default-worker'
         }), {
           headers: { 'Content-Type': 'application/json' }
         });
