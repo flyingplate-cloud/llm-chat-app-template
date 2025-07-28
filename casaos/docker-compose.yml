@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  nginx-default:
+    build: .
+    container_name: nginx-default-casaos
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      # Optional: mount logs directory
+      - ./logs:/app/logs
+    networks:
+      - casaos-network
+    labels:
+      - "casaos.app.name=Nginx Default"
+      - "casaos.app.description=A lightweight nginx-like web server"
+      - "casaos.app.icon=nginx"
+      - "casaos.app.category=web-server"
+      - "casaos.app.port=3000"
+      - "casaos.app.protocol=http"
+
+networks:
+  casaos-network:
+    driver: bridge

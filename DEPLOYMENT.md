@@ -1,88 +1,117 @@
-# Deployment Guide - Cloudflare Workers Nginx
+# Deployment Guide
 
-This guide will help you deploy the nginx-like application to Cloudflare Workers.
+This guide covers deployment instructions for both CasaOS and Cloudflare Workers versions of the Nginx Default Application.
 
-## Prerequisites
+## 🏠 CasaOS Deployment
 
-1. **Node.js** (v18 or later)
-2. **Wrangler CLI** - Cloudflare's command-line tool
-3. **Cloudflare Account** with Workers enabled
+### Prerequisites
+- Docker and Docker Compose installed
+- CasaOS running on your system
 
-## Installation Steps
+### Quick Deployment
 
-### 1. Install Wrangler CLI
-
+1. **Clone the repository:**
 ```bash
-npm install -g wrangler
+git clone <your-repo-url>
+cd casaos
 ```
 
-### 2. Login to Cloudflare
-
+2. **Start the application:**
 ```bash
-wrangler login
+docker-compose up -d
 ```
 
-This will open your browser to authenticate with Cloudflare.
+3. **Access the application:**
+   - Dashboard: http://localhost:3000
+   - Health check: http://localhost:3000/health
+   - Server info: http://localhost:3000/server-info
 
-### 3. Install Dependencies
+### Manual Docker Deployment
 
+1. **Build the image:**
+```bash
+docker build -t nginx-default-casaos .
+```
+
+2. **Run the container:**
+```bash
+docker run -d -p 3000:3000 --name nginx-default-casaos nginx-default-casaos
+```
+
+### Development Setup
+
+1. **Install dependencies:**
 ```bash
 npm install
 ```
 
-## Development
-
-### Start Development Server
-
+2. **Start development server:**
 ```bash
 npm run dev
 ```
 
-This will start a local development server at `http://localhost:8787`.
+3. **Access at:** http://localhost:3000
 
-### Type Checking
+### CasaOS Integration
 
-```bash
-npm run check
+The application includes CasaOS-specific labels in `docker-compose.yml`:
+
+```yaml
+labels:
+  - "casaos.app.name=Nginx Default"
+  - "casaos.app.description=A lightweight nginx-like web server"
+  - "casaos.app.icon=nginx"
+  - "casaos.app.category=web-server"
+  - "casaos.app.port=3000"
+  - "casaos.app.protocol=http"
 ```
 
-This runs TypeScript compilation and a dry-run deployment to catch any issues.
+## ☁️ Cloudflare Workers Deployment
 
-## Deployment
+### Prerequisites
+- Node.js (v18 or later)
+- Wrangler CLI installed
+- Cloudflare account
 
-### Deploy to Cloudflare Workers
+### Quick Deployment
 
+1. **Clone the repository:**
+```bash
+git clone <your-repo-url>
+cd cloudflare-worker
+```
+
+2. **Install dependencies:**
+```bash
+npm install
+```
+
+3. **Login to Cloudflare:**
+```bash
+wrangler login
+```
+
+4. **Deploy the worker:**
 ```bash
 npm run deploy
 ```
 
-Or directly with wrangler:
+### Development Setup
 
+1. **Start development server:**
 ```bash
-wrangler deploy
+npm run dev
 ```
 
-### Environment-Specific Deployment
+2. **Access at:** http://localhost:8787
 
-You can deploy to different environments:
-
-```bash
-# Deploy to production
-wrangler deploy --env production
-
-# Deploy to staging
-wrangler deploy --env staging
-```
-
-## Configuration
-
-### Wrangler Configuration
+### Configuration
 
 The `wrangler.jsonc` file contains the main configuration:
 
 ```json
 {
-  "name": "nginx-default-worker",
+  "name": "nginx-default-cloudflare-worker",
   "main": "src/index.ts",
   "compatibility_date": "2025-04-01",
   "assets": {
@@ -92,185 +121,156 @@ The `wrangler.jsonc` file contains the main configuration:
 }
 ```
 
-### Custom Domains
+## 🔧 Environment Variables
 
-To use a custom domain:
+### CasaOS Version
+- `PORT` - Server port (default: 3000)
+- `NODE_ENV` - Environment mode (default: production)
 
-1. Add your domain in the Cloudflare dashboard
-2. Add the domain to your wrangler configuration:
+### Cloudflare Workers Version
+- No environment variables required for basic functionality
+- Uses Cloudflare's built-in features for IP detection and geolocation
 
-```json
-{
-  "name": "nginx-default-worker",
-  "routes": [
-    {
-      "pattern": "your-domain.com/*",
-      "zone_name": "your-domain.com"
-    }
-  ]
-}
-```
+## 📊 Monitoring
 
-### Environment Variables
+### Health Checks
+Both versions provide health check endpoints:
+- **CasaOS**: `http://localhost:3000/health`
+- **Cloudflare Workers**: `https://your-worker.your-subdomain.workers.dev/health`
 
-If you need environment variables, add them to your wrangler configuration:
+### Server Information
+- **CasaOS**: `http://localhost:3000/server-info`
+- **Cloudflare Workers**: `https://your-worker.your-subdomain.workers.dev/server-info`
 
-```json
-{
-  "name": "nginx-default-worker",
-  "vars": {
-    "ENVIRONMENT": "production",
-    "API_VERSION": "v1"
-  }
-}
-```
+## 🔒 Security
 
-## Monitoring
+### CasaOS Security Features
+- **Helmet.js**: Automatic security headers
+- **CORS**: Cross-origin resource sharing support
+- **Compression**: Automatic response compression
+- **Non-root user**: Docker container runs as non-root user
 
-### Built-in Endpoints
+### Cloudflare Workers Security Features
+- **HTTPS Only**: All requests automatically served over HTTPS
+- **DDoS Protection**: Cloudflare's global network protection
+- **Rate Limiting**: Configurable in Cloudflare dashboard
+- **Security Headers**: Automatic security headers
 
-After deployment, you can monitor your application using these endpoints:
+## 🚀 Performance Optimization
 
-- **Dashboard**: `https://your-worker.your-subdomain.workers.dev/`
-- **Health Check**: `https://your-worker.your-subdomain.workers.dev/health`
-- **Server Info**: `https://your-worker.your-subdomain.workers.dev/server-info`
-- **API Status**: `https://your-worker.your-subdomain.workers.dev/api/status`
+### CasaOS Performance
+- **Compression**: Automatic response compression with gzip
+- **Caching**: Configurable static file caching headers
+- **Docker**: Optimized container deployment
+- **Logging**: HTTP request logging with Morgan
 
-### Cloudflare Analytics
+### Cloudflare Workers Performance
+- **Edge Caching**: Global edge network caching
+- **Zero Cold Start**: Instant response times
+- **Minimal Bundle**: Optimized worker size
+- **Global Distribution**: Deployed to 200+ locations worldwide
 
-Enable analytics in your Cloudflare dashboard to monitor:
+## 🐛 Troubleshooting
 
-- Request volume
-- Response times
-- Error rates
-- Geographic distribution
+### CasaOS Issues
 
-## Troubleshooting
-
-### Common Issues
-
-1. **Deployment Fails**
-   - Check your Wrangler configuration
-   - Ensure you're logged in: `wrangler whoami`
-   - Verify your account has Workers enabled
-
-2. **Static Files Not Loading**
-   - Ensure files are in the `public/` directory
-   - Check the assets binding in `wrangler.jsonc`
-   - Verify file permissions
-
-3. **TypeScript Errors**
-   - Run `npm run check` to see compilation errors
-   - Ensure all dependencies are installed
-
-4. **API Endpoints Not Working**
-   - Check the worker logs in Cloudflare dashboard
-   - Verify the route handling in `src/index.ts`
-
-### Debug Mode
-
-Enable debug logging by adding console.log statements to your worker code:
-
-```typescript
-console.log('Request URL:', request.url);
-console.log('Request Method:', request.method);
-```
-
-### Viewing Logs
-
+**Port Already in Use:**
 ```bash
-# View real-time logs
-wrangler tail
-
-# View logs for specific environment
-wrangler tail --env production
+# Change port in docker-compose.yml
+ports:
+  - "3001:3000"  # Use port 3001 instead
 ```
 
-## Performance Optimization
+**Container Won't Start:**
+```bash
+# Check logs
+docker-compose logs nginx-default
 
-### Bundle Size
-
-Keep your worker bundle small:
-
-1. Use tree-shaking
-2. Minimize dependencies
-3. Use dynamic imports when possible
-
-### Caching
-
-Leverage Cloudflare's edge caching:
-
-1. Set appropriate cache headers
-2. Use Cloudflare's cache API
-3. Configure cache rules in the dashboard
-
-### Static Assets
-
-Optimize static assets:
-
-1. Compress images (WebP format)
-2. Minify CSS and JavaScript
-3. Use appropriate cache headers
-
-## Security
-
-### HTTPS
-
-All requests are automatically served over HTTPS.
-
-### Security Headers
-
-Add security headers in your worker:
-
-```typescript
-return new Response(content, {
-  headers: {
-    'Content-Type': 'text/html',
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'X-XSS-Protection': '1; mode=block',
-    'Referrer-Policy': 'strict-origin-when-cross-origin'
-  }
-});
+# Restart container
+docker-compose restart nginx-default
 ```
 
-### Rate Limiting
+**Permission Issues:**
+```bash
+# Fix file permissions
+chmod -R 755 casaos/
+```
 
-Configure rate limiting in your Cloudflare dashboard:
+### Cloudflare Workers Issues
 
-1. Go to Security > WAF
-2. Create custom rules
-3. Set rate limiting rules
+**Deployment Failures:**
+```bash
+# Check Wrangler configuration
+wrangler deploy --dry-run
 
-## Scaling
+# Verify TypeScript compilation
+npm run check
+```
 
-### Automatic Scaling
+**404 Errors:**
+- Ensure static files are in the `public/` directory
+- Check that assets are properly configured in `wrangler.jsonc`
 
-Cloudflare Workers automatically scales based on demand.
+**Type Errors:**
+```bash
+# Run TypeScript check
+npm run check
 
-### Limits
+# Generate types
+npm run cf-typegen
+```
 
-Be aware of Cloudflare Workers limits:
+## 📝 Logs
 
-- **CPU Time**: 10ms per request (free), 50ms (paid)
-- **Memory**: 128MB per request
-- **Request Size**: 100MB
-- **Response Size**: 100MB
+### CasaOS Logs
+```bash
+# View container logs
+docker-compose logs -f nginx-default
 
-## Support
+# View application logs
+docker exec nginx-default-casaos cat /app/logs/app.log
+```
 
-### Resources
+### Cloudflare Workers Logs
+- Logs are available in the Cloudflare dashboard
+- Use `console.log()` statements for debugging
+- Enable real-time logs with `wrangler tail`
 
+## 🔄 Updates
+
+### CasaOS Updates
+```bash
+# Pull latest changes
+git pull origin main
+
+# Rebuild and restart
+docker-compose down
+docker-compose up -d --build
+```
+
+### Cloudflare Workers Updates
+```bash
+# Pull latest changes
+git pull origin main
+
+# Deploy updates
+npm run deploy
+```
+
+## 📚 Additional Resources
+
+### CasaOS
+- [CasaOS Documentation](https://docs.casaos.io/)
+- [Docker Documentation](https://docs.docker.com/)
+- [Express.js Documentation](https://expressjs.com/)
+
+### Cloudflare Workers
 - [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
 - [Wrangler CLI Documentation](https://developers.cloudflare.com/workers/wrangler/)
 - [Cloudflare Community](https://community.cloudflare.com/)
 
-### Getting Help
-
-1. Check the [Cloudflare Workers documentation](https://developers.cloudflare.com/workers/)
-2. Search the [Cloudflare Community](https://community.cloudflare.com/)
-3. Open an issue in this repository
-
 ---
 
-Happy deploying! 🚀
+For detailed documentation, see:
+- [CasaOS Version](./casaos/README.md)
+- [Cloudflare Workers Version](./cloudflare-worker/README.md)
