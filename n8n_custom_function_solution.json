@@ -1,0 +1,84 @@
+{
+  "name": "Custom Function API Test",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1.1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Custom Function для вызова API\nconst message = $input.first().json.message || 'Привет! Как дела?';\n\nconst response = await fetch('https://llm.flyingplate.cloud/api/chat', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json'\n  },\n  body: JSON.stringify({\n    messages: [\n      {\n        role: 'user',\n        content: message\n      }\n    ]\n  })\n});\n\nif (!response.ok) {\n  throw new Error(`HTTP error! status: ${response.status}`);\n}\n\nconst data = await response.json();\n\nreturn [{\n  json: {\n    success: true,\n    ai_response: data.response,\n    tokens_used: data.usage?.total_tokens || 0,\n    raw_response: data,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "custom-function",
+      "name": "Custom Function",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "status",
+              "value": "={{ $json.success ? 'SUCCESS' : 'ERROR' }}"
+            },
+            {
+              "name": "response",
+              "value": "={{ $json.ai_response }}"
+            },
+            {
+              "name": "tokens",
+              "value": "={{ $json.tokens_used }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-output",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Custom Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Custom Function": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2024-01-01T00:00:00.000Z",
+  "versionId": "1"
+}
