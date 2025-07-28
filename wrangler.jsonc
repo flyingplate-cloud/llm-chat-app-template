@@ -14,5 +14,11 @@
   "observability": {
     "enabled": true
   },
-  "upload_source_maps": true
+  "upload_source_maps": true,
+  "routes": [
+    {
+      "pattern": "llm.flyingplate.cloud/*",
+      "zone_name": "flyingplate.cloud"
+    }
+  ]
 }
