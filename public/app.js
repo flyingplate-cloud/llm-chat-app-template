@@ -1,32 +1,17 @@
 /**
- * Cloudflare Workers Nginx - Demo JavaScript
- * This file demonstrates static JavaScript serving
+ * Optimized Cloudflare Workers Nginx Dashboard
  */
 
-// Global configuration
 const CONFIG = {
     apiBase: '/api',
-    endpoints: {
-        status: '/status',
-        echo: '/echo',
-        health: '/health',
-        serverInfo: '/server-info'
-    },
-    updateInterval: 30000 // 30 seconds
+    endpoints: { status: '/status', echo: '/echo', health: '/health', serverInfo: '/server-info' },
+    updateInterval: 30000
 };
 
 // Utility functions
 const Utils = {
-    /**
-     * Format timestamp
-     */
-    formatTime: (timestamp) => {
-        return new Date(timestamp).toLocaleString();
-    },
-
-    /**
-     * Format uptime
-     */
+    formatTime: (timestamp) => new Date(timestamp).toLocaleString(),
+    
     formatUptime: (milliseconds) => {
         const seconds = Math.floor(milliseconds / 1000);
         const minutes = Math.floor(seconds / 60);
@@ -38,67 +23,36 @@ const Utils = {
         if (hours % 24 > 0) uptimeStr += `${hours % 24}h `;
         if (minutes % 60 > 0) uptimeStr += `${minutes % 60}m `;
         uptimeStr += `${seconds % 60}s`;
-        
         return uptimeStr;
     },
 
-    /**
-     * Show notification
-     */
     showNotification: (message, type = 'info') => {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.textContent = message;
         
-        // Add styles
         notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
+            position: fixed; top: 20px; right: 20px; padding: 1rem;
+            border-radius: 5px; color: white; font-weight: bold; z-index: 1000;
+            animation: slideIn 0.3s ease; background: ${type === 'success' ? '#28a745' : 
+            type === 'error' ? '#dc3545' : '#17a2b8'};
         `;
         
-        if (type === 'success') {
-            notification.style.background = '#28a745';
-        } else if (type === 'error') {
-            notification.style.background = '#dc3545';
-        } else {
-            notification.style.background = '#17a2b8';
-        }
-        
         document.body.appendChild(notification);
-        
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.remove();
-        }, 3000);
+        setTimeout(() => notification.remove(), 3000);
     }
 };
 
 // API client
 const API = {
-    /**
-     * Make API request
-     */
     async request(endpoint, options = {}) {
         try {
             const response = await fetch(`${CONFIG.apiBase}${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers
-                },
+                headers: { 'Content-Type': 'application/json', ...options.headers },
                 ...options
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
+            if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             return await response.json();
         } catch (error) {
             console.error('API request failed:', error);
@@ -107,60 +61,23 @@ const API = {
         }
     },
 
-    /**
-     * Get server status
-     */
-    async getStatus() {
-        return this.request(CONFIG.endpoints.status);
-    },
-
-    /**
-     * Echo request details
-     */
-    async echo(data = {}) {
-        return this.request(CONFIG.endpoints.echo, {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-    },
-
-    /**
-     * Get health status
-     */
-    async getHealth() {
-        const response = await fetch('/health');
-        return response.json();
-    },
-
-    /**
-     * Get server info
-     */
-    async getServerInfo() {
-        const response = await fetch('/server-info');
-        return response.json();
-    }
+    async getStatus() { return this.request(CONFIG.endpoints.status); },
+    async echo(data = {}) { return this.request(CONFIG.endpoints.echo, { method: 'POST', body: JSON.stringify(data) }); },
+    async getHealth() { return (await fetch('/health')).json(); },
+    async getServerInfo() { return (await fetch('/server-info')).json(); }
 };
 
 // Dashboard functionality
 const Dashboard = {
-    /**
-     * Initialize dashboard
-     */
     init() {
         console.log('🚀 Cloudflare Workers Nginx Dashboard initialized');
         this.updateServerInfo();
         this.startUptimeCounter();
         this.setupEventListeners();
         
-        // Update server info periodically
-        setInterval(() => {
-            this.updateServerInfo();
-        }, CONFIG.updateInterval);
+        setInterval(() => this.updateServerInfo(), CONFIG.updateInterval);
     },
 
-    /**
-     * Update server information
-     */
     async updateServerInfo() {
         try {
             const serverInfo = await API.getServerInfo();
@@ -170,9 +87,6 @@ const Dashboard = {
         }
     },
 
-    /**
-     * Display server information
-     */
     displayServerInfo(data) {
         const serverInfoElement = document.getElementById('server-info');
         if (!serverInfoElement) return;
@@ -197,9 +111,6 @@ const Dashboard = {
         `;
     },
 
-    /**
-     * Start uptime counter
-     */
     startUptimeCounter() {
         const startTime = Date.now();
         const uptimeElement = document.getElementById('uptime');
@@ -212,11 +123,7 @@ const Dashboard = {
         }, 1000);
     },
 
-    /**
-     * Setup event listeners
-     */
     setupEventListeners() {
-        // Test API button
         const testApiBtn = document.getElementById('test-api-btn');
         if (testApiBtn) {
             testApiBtn.addEventListener('click', async () => {
@@ -233,7 +140,6 @@ const Dashboard = {
             });
         }
 
-        // Health check button
         const healthCheckBtn = document.getElementById('health-check-btn');
         if (healthCheckBtn) {
             healthCheckBtn.addEventListener('click', async () => {
@@ -251,9 +157,6 @@ const Dashboard = {
 
 // Performance monitoring
 const Performance = {
-    /**
-     * Track page load performance
-     */
     trackPageLoad() {
         if ('performance' in window) {
             window.addEventListener('load', () => {
@@ -263,9 +166,6 @@ const Performance = {
         }
     },
 
-    /**
-     * Track API response times
-     */
     async trackApiPerformance(apiCall) {
         const start = performance.now();
         try {
@@ -285,17 +185,9 @@ const Performance = {
 document.addEventListener('DOMContentLoaded', () => {
     Dashboard.init();
     Performance.trackPageLoad();
-    
-    // Add some demo functionality
     console.log('📊 Dashboard loaded successfully');
     console.log('🔧 Available endpoints:', Object.values(CONFIG.endpoints));
 });
 
 // Export for global access
-window.NginxWorker = {
-    API,
-    Utils,
-    Dashboard,
-    Performance,
-    CONFIG
-};
+window.NginxWorker = { API, Utils, Dashboard, Performance, CONFIG };
