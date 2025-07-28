@@ -3,71 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloudflare Workers Nginx</title>
+    <title>CasaOS Cloudflare Worker</title>
     <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🚀 Cloudflare Workers Nginx</h1>
-            <p>A lightweight web server powered by Cloudflare Workers</p>
-        </div>
-
-        <div class="content">
-            <div class="status-grid">
-                <div class="status-card">
-                    <h3>Server Status</h3>
-                    <p><span class="status-indicator"></span>Running</p>
-                    <p>Uptime: <span id="uptime">Loading...</span></p>
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-home"></i>
+                    <h1>CasaOS</h1>
                 </div>
-                
-                <div class="status-card">
-                    <h3>Health Check</h3>
-                    <p><span class="status-indicator"></span>Healthy</p>
-                    <p>Last Check: <span id="last-check">Loading...</span></p>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <div class="status-indicator">
+                        <span class="status-dot online"></span>
+                        <span class="status-text">Online</span>
+                    </div>
                 </div>
             </div>
+        </header>
 
-            <div class="endpoints">
-                <h3>Available Endpoints</h3>
-                <ul class="endpoint-list">
-                    <li><a href="/health" target="_blank">/health</a> - Health check endpoint</li>
-                    <li><a href="/server-info" target="_blank">/server-info</a> - Server information</li>
-                    <li><a href="/api/status" target="_blank">/api/status</a> - API status</li>
-                    <li><a href="/api/echo" target="_blank">/api/echo</a> - Echo request details</li>
-                </ul>
-            </div>
-
-            <div class="server-info">
-                <h3>Server Information</h3>
-                <div class="info-grid" id="server-info">
-                    <div class="info-item">
-                        <div class="info-label">Server</div>
-                        <div class="info-value">Cloudflare Workers Nginx</div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- System Overview -->
+            <section class="system-overview">
+                <h2><i class="fas fa-chart-line"></i> System Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>CPU Usage</h3>
+                            <p class="stat-value" id="cpu-usage">--</p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Version</div>
-                        <div class="info-value">1.0.0</div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Memory</h3>
+                            <p class="stat-value" id="memory-usage">--</p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Platform</div>
-                        <div class="info-value">Cloudflare Workers</div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Storage</h3>
+                            <p class="stat-value" id="storage-usage">--</p>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <div class="info-label">Runtime</div>
-                        <div class="info-value">V8 Isolates</div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>Network</h3>
+                            <p class="stat-value" id="network-connections">--</p>
+                        </div>
                     </div>
                 </div>
-                
-                <div style="margin-top: 1rem; text-align: center;">
-                    <button id="test-api-btn" class="btn">Test API</button>
-                    <button id="health-check-btn" class="btn btn-secondary" style="margin-left: 0.5rem;">Health Check</button>
+            </section>
+
+            <!-- Apps Management -->
+            <section class="apps-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-th-large"></i> Applications</h2>
+                    <div class="app-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="running">Running</button>
+                        <button class="filter-btn" data-filter="stopped">Stopped</button>
+                    </div>
+                </div>
+                <div class="apps-grid" id="apps-grid">
+                    <!-- Apps will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Performance Metrics -->
+            <section class="performance-section">
+                <h2><i class="fas fa-tachometer-alt"></i> Performance</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <h3>Response Time</h3>
+                        <p class="metric-value" id="response-time">--</p>
+                        <small>Average response time</small>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Requests/sec</h3>
+                        <p class="metric-value" id="requests-per-sec">--</p>
+                        <small>Current load</small>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Error Rate</h3>
+                        <p class="metric-value" id="error-rate">--</p>
+                        <small>Error percentage</small>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- App Details Modal -->
+        <div class="modal" id="app-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">App Details</h3>
+                    <button class="close-btn" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <!-- App details will be loaded here -->
                 </div>
             </div>
-        </div>
-
-        <div class="footer">
-            <p>&copy; 2025 Cloudflare Workers Nginx Template</p>
         </div>
     </div>
 

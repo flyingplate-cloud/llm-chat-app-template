@@ -1,26 +1,16 @@
 {
-  "name": "nginx-default-worker",
-  "description": "A lightweight nginx-like web server powered by Cloudflare Workers",
+  "name": "casaos-cloudflare-worker",
+  "description": "A comprehensive home server management application for Cloudflare Workers that mimics CasaOS functionality",
   "version": "1.0.0",
   "cloudflare": {
-    "label": "Nginx Default Worker",
-    "products": [
-      "Workers"
-    ],
-    "categories": [
-      "web-server"
-    ],
-    "docs_url": "https://developers.cloudflare.com/workers/",
-    "icon_urls": [],
-    "publish": true
+    "account_id": "your-account-id",
+    "zone_id": "your-zone-id"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "0.8.44",
-    "@cloudflare/workers-types": "^4.20250425.0",
-    "@types/node": "24.0.4",
-    "typescript": "5.8.3",
-    "vitest": "3.2.4",
-    "wrangler": "4.21.x"
+    "@cloudflare/workers-types": "^4.20250401.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0",
+    "vitest": "^1.0.0"
   },
   "private": true,
   "scripts": {
