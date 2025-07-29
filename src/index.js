@@ -43,6 +43,41 @@ const html = `<!DOCTYPE html>
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: bgAnimation 20s ease-in-out infinite;
+        }
+        
+        @keyframes bgAnimation {
+            0%, 100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.8;
+            }
+            25% {
+                transform: scale(1.1) rotate(90deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(0.9) rotate(180deg);
+                opacity: 0.6;
+            }
+            75% {
+                transform: scale(1.05) rotate(270deg);
+                opacity: 0.9;
+            }
         }
         .container {
             background: rgba(255, 255, 255, 0.1);
@@ -83,6 +118,7 @@ const html = `<!DOCTYPE html>
     </style>
 </head>
 <body>
+    <div class="animated-bg"></div>
     <div class="container">
         <h1>🚀 Простое веб-приложение</h1>
         <p>Это минимальный пример веб-приложения, работающего на Cloudflare Worker.</p>
