@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "start": "wrangler dev"
+    "start": "wrangler dev",
+    "build": "echo 'No build step required'",
+    "pages:deploy": "wrangler deploy"
   },
   "keywords": [
     "cloudflare",
