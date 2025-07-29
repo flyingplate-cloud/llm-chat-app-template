@@ -13,11 +13,18 @@ export default {
     
     // Обработка GIF файла
     if (url.pathname === '/pahom.gif') {
-      return new Response('GIF89a', {
-        headers: {
-          'content-type': 'image/gif',
-        },
-      });
+      try {
+        const gifResponse = await fetch('https://cs.pikabu.ru/images/big_size_comm/2013-03_5/13638277054747.gif');
+        const gifBuffer = await gifResponse.arrayBuffer();
+        return new Response(gifBuffer, {
+          headers: {
+            'content-type': 'image/gif',
+            'cache-control': 'public, max-age=3600',
+          },
+        });
+      } catch (error) {
+        return new Response('Error loading GIF', { status: 500 });
+      }
     }
     
     // API endpoint
