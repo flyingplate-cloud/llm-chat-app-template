@@ -63,7 +63,7 @@ var html = `<!DOCTYPE html>
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0a0a0a;
             color: white;
             min-height: 100vh;
             position: relative;
@@ -78,28 +78,67 @@ var html = `<!DOCTYPE html>
             height: 100%;
             z-index: -1;
             background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-            animation: bgAnimation 20s ease-in-out infinite;
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent),
+                radial-gradient(2px 2px at 200px 60px, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 250px 20px, #fff, transparent),
+                radial-gradient(1px 1px at 280px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 320px 40px, #eee, transparent),
+                radial-gradient(2px 2px at 350px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 400px 30px, #fff, transparent),
+                radial-gradient(1px 1px at 430px 60px, rgba(255,255,255,0.4), transparent),
+                radial-gradient(2px 2px at 470px 20px, #ddd, transparent),
+                radial-gradient(2px 2px at 500px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 550px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 580px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 620px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 650px 60px, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 700px 20px, #fff, transparent),
+                radial-gradient(1px 1px at 730px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 770px 40px, #ddd, transparent),
+                radial-gradient(2px 2px at 800px 80px, rgba(255,255,255,0.6), transparent),
+                linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: spaceAnimation 30s linear infinite;
         }
         
-        @keyframes bgAnimation {
+        @keyframes spaceAnimation {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+        
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(120, 0, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(0, 150, 255, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(255, 0, 150, 0.3) 0%, transparent 50%);
+            animation: nebulaAnimation 25s ease-in-out infinite;
+        }
+        
+        @keyframes nebulaAnimation {
             0%, 100% {
                 transform: scale(1) rotate(0deg);
-                opacity: 0.8;
-            }
-            25% {
-                transform: scale(1.1) rotate(90deg);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(0.9) rotate(180deg);
                 opacity: 0.6;
             }
-            75% {
-                transform: scale(1.05) rotate(270deg);
-                opacity: 0.9;
+            33% {
+                transform: scale(1.2) rotate(120deg);
+                opacity: 0.8;
+            }
+            66% {
+                transform: scale(0.8) rotate(240deg);
+                opacity: 0.4;
             }
         }
         .container {
@@ -141,6 +180,7 @@ var html = `<!DOCTYPE html>
     </style>
 </head>
 <body>
+    <div class="nebula"></div>
     <div class="animated-bg"></div>
     <div class="container">
         <h1>\u{1F680} \u041F\u0440\u043E\u0441\u0442\u043E\u0435 \u0432\u0435\u0431-\u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435</h1>
