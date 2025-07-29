@@ -1,34 +1,22 @@
 {
-  "name": "nginx-default-worker",
-  "description": "A lightweight nginx-like web server powered by Cloudflare Workers",
+  "name": "simple-cloudflare-worker",
   "version": "1.0.0",
-  "cloudflare": {
-    "label": "Nginx Default Worker",
-    "products": [
-      "Workers"
-    ],
-    "categories": [
-      "web-server"
-    ],
-    "docs_url": "https://developers.cloudflare.com/workers/",
-    "icon_urls": [],
-    "publish": true
-  },
-  "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "0.8.44",
-    "@cloudflare/workers-types": "^4.20250425.0",
-    "@types/node": "24.0.4",
-    "typescript": "5.8.3",
-    "vitest": "3.2.4",
-    "wrangler": "4.21.x"
-  },
-  "private": true,
+  "description": "Минимальное веб-приложение для Cloudflare Worker",
+  "main": "src/index.js",
   "scripts": {
-    "cf-typegen": "wrangler types",
-    "check": "tsc --noEmit && wrangler deploy --dry-run",
-    "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "test": "vitest"
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev"
+  },
+  "keywords": [
+    "cloudflare",
+    "worker",
+    "web",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
   }
 }
