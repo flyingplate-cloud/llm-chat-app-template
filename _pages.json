@@ -1,0 +1,9 @@
+{
+  "build": {
+    "command": "npm run build",
+    "output_directory": "."
+  },
+  "deploy": {
+    "command": "npm run pages:deploy"
+  }
+}
