@@ -75,8 +75,14 @@ const html = `<!DOCTYPE html>
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Prison_cell_interior.jpg/1200px-Prison_cell_interior.jpg') no-repeat center center;
-            background-size: cover;
+            background: 
+                linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+                linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 40px 40px;
+            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
+            background-color: #0a0a0a;
             display: flex;
             flex-direction: column;
             align-items: center;
