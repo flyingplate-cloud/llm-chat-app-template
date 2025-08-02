@@ -182,11 +182,11 @@ const html = `<!DOCTYPE html>
         }
         
         .pahom {
-            background-image: url('https://i.imgur.com/8XZqY3L.jpg');
+            background-image: url('https://avatanplus.com/files/resources/original/572a212f0727a1547c919fb5.png');
         }
         
         .bratishka {
-            background-image: url('https://i.imgur.com/JK9mN2Q.jpg');
+            background-image: url('https://rytp.miraheze.org/wiki/%D0%A4%D0%B0%D0%B9%D0%BB:%D0%95%D0%BF%D0%B8%D1%84%D0%B0%D0%BD.png');
         }
         
         .action-buttons {
@@ -285,9 +285,9 @@ const html = `<!DOCTYPE html>
                         <div class="character-text">БРАТИШКА<br>на шконке</div>
                     </div>
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="performAction('bratishka', 'stand')">Постоять как цапля</button>
-                        <button class="action-btn" onclick="performAction('bratishka', 'story')">Рассказать историю</button>
-                        <button class="action-btn" onclick="performAction('bratishka', 'joke')">Сказать шутку</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'stand')">TBD</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'story')">TBD</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'joke')">TBD</button>
                     </div>
                 </div>
             </div>
