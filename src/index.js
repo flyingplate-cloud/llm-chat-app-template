@@ -146,10 +146,14 @@ const html = `<!DOCTYPE html>
             cursor: pointer;
             transition: all 0.3s ease;
             border: 3px solid #444;
-            background: rgba(0, 0, 0, 0.8);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: #fff;
             font-weight: bold;
             line-height: 1.2;
+            position: relative;
+            overflow: hidden;
         }
         
         .character:hover {
@@ -157,12 +161,32 @@ const html = `<!DOCTYPE html>
             border-color: #666;
         }
         
-        .bratishka {
-            background: linear-gradient(135deg, #8B4513, #A0522D);
+        .character::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+        
+        .character-text {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: clamp(8px, 2vw, 10px);
         }
         
         .pahom {
-            background: linear-gradient(135deg, #2F4F4F, #556B2F);
+            background-image: url('https://i.imgur.com/8XZqY3L.jpg');
+        }
+        
+        .bratishka {
+            background-image: url('https://i.imgur.com/JK9mN2Q.jpg');
         }
         
         .action-buttons {
@@ -246,24 +270,24 @@ const html = `<!DOCTYPE html>
             
             <div class="characters-container">
                 <div class="character-section">
-                    <div class="character bratishka" onclick="showDialogue('bratishka')">
-                        БРАТИШКА<br>на шконке
-                    </div>
-                    <div class="action-buttons">
-                        <button class="action-btn" onclick="performAction('bratishka', 'stand')">Постоять как цапля</button>
-                        <button class="action-btn" onclick="performAction('bratishka', 'story')">Рассказать историю</button>
-                        <button class="action-btn" onclick="performAction('bratishka', 'joke')">Сказать шутку</button>
-                    </div>
-                </div>
-                
-                <div class="character-section">
                     <div class="character pahom" onclick="showDialogue('pahom')">
-                        ПАХОМ<br>в центре
+                        <div class="character-text">ПАХОМ<br>в центре</div>
                     </div>
                     <div class="action-buttons">
                         <button class="action-btn" onclick="performAction('pahom', 'pushups')">Отжаться 20 раз</button>
                         <button class="action-btn" onclick="performAction('pahom', 'philosophy')">Философствовать</button>
                         <button class="action-btn" onclick="performAction('pahom', 'dance')">Станцевать</button>
+                    </div>
+                </div>
+                
+                <div class="character-section">
+                    <div class="character bratishka" onclick="showDialogue('bratishka')">
+                        <div class="character-text">БРАТИШКА<br>на шконке</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="performAction('bratishka', 'stand')">Постоять как цапля</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'story')">Рассказать историю</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'joke')">Сказать шутку</button>
                     </div>
                 </div>
             </div>
