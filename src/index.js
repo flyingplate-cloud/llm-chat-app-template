@@ -75,7 +75,7 @@ const html = `<!DOCTYPE html>
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: url('https://share.google/CMiKyovu5PmWhDswl') no-repeat center center;
+            background: url('https://i.imgur.com/8XZqY3L.jpg') no-repeat center center;
             background-size: cover;
             display: flex;
             flex-direction: column;
@@ -103,17 +103,6 @@ const html = `<!DOCTYPE html>
             align-items: center;
             justify-content: space-between;
             padding: 10px;
-        }
-        
-        .title {
-            font-size: clamp(16px, 4vw, 24px);
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            text-align: center;
-            margin-top: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 16px;
-            border-radius: 8px;
         }
         
         .characters-container {
@@ -242,19 +231,9 @@ const html = `<!DOCTYPE html>
             .action-buttons {
                 max-width: 120px;
             }
-            
-            .title {
-                font-size: 16px;
-                margin-top: 5px;
-            }
         }
         
         @media (max-height: 600px) {
-            .title {
-                font-size: 14px;
-                margin-top: 5px;
-            }
-            
             .dialogue-box {
                 min-height: 50px;
                 margin-bottom: 5px;
@@ -266,12 +245,10 @@ const html = `<!DOCTYPE html>
     <div class="prison-cell">
         <div class="overlay"></div>
         <div class="content">
-            <div class="title">ЗЕЛЁНЫЙ СЛОНИК - ТЮРЕМНАЯ КАМЕРА</div>
-            
             <div class="characters-container">
                 <div class="character-section">
                     <div class="character pahom" onclick="showDialogue('pahom')">
-                        <div class="character-text">ПАХОМ<br>в центре</div>
+                        <div class="character-text">ПАХОМ</div>
                     </div>
                     <div class="action-buttons">
                         <button class="action-btn" onclick="performAction('pahom', 'pushups')">Отжаться 20 раз</button>
@@ -282,7 +259,7 @@ const html = `<!DOCTYPE html>
                 
                 <div class="character-section">
                     <div class="character bratishka" onclick="showDialogue('bratishka')">
-                        <div class="character-text">БРАТИШКА<br>на шконке</div>
+                        <div class="character-text">БРАТИШКА</div>
                     </div>
                     <div class="action-buttons">
                         <button class="action-btn" onclick="performAction('bratishka', 'stand')">TBD</button>
