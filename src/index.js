@@ -14,7 +14,7 @@ export default {
     // Обработка GIF файла
     if (url.pathname === '/pahom.gif') {
       try {
-        const gifResponse = await fetch('https://cs.pikabu.ru/images/big_size_comm/2013-03_5/13638277054747.gif');
+        const gifResponse = await fetch('https://flyingplate.cloud/kurlyk.gif');
         const gifBuffer = await gifResponse.arrayBuffer();
         return new Response(gifBuffer, {
           headers: {
