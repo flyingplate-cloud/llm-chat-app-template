@@ -48,49 +48,108 @@ const html = `<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Зелёный слоник - Тюремная камера</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             padding: 0;
-            background: #1a1a1a;
+            background: #000;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            max-height: 100vh;
             overflow: hidden;
             font-family: 'Courier New', monospace;
             color: #fff;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
         
         .prison-cell {
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: 
-                linear-gradient(45deg, #2a2a2a 25%, transparent 25%),
-                linear-gradient(-45deg, #2a2a2a 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #2a2a2a 75%),
-                linear-gradient(-45deg, transparent 75%, #2a2a2a 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            background-color: #1a1a1a;
+            background: url('https://share.google/CMiKyovu5PmWhDswl') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        
+        .title {
+            font-size: clamp(16px, 4vw, 24px);
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: center;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .characters-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            flex: 1;
+            padding: 0 20px;
+        }
+        
+        .character-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
         }
         
         .character {
-            position: absolute;
-            width: 120px;
-            height: 120px;
+            width: clamp(80px, 20vw, 120px);
+            height: clamp(80px, 20vw, 120px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: clamp(10px, 2.5vw, 12px);
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 3px solid #444;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            font-weight: bold;
+            line-height: 1.2;
         }
         
         .character:hover {
@@ -99,131 +158,119 @@ const html = `<!DOCTYPE html>
         }
         
         .bratishka {
-            left: 10%;
-            top: 50%;
-            transform: translateY(-50%);
             background: linear-gradient(135deg, #8B4513, #A0522D);
-            color: #fff;
         }
         
         .pahom {
-            right: 10%;
-            top: 50%;
-            transform: translateY(-50%);
             background: linear-gradient(135deg, #2F4F4F, #556B2F);
-            color: #fff;
         }
         
         .action-buttons {
-            position: absolute;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-        
-        .bratishka-buttons {
-            left: 15%;
-            top: 70%;
-        }
-        
-        .pahom-buttons {
-            right: 15%;
-            top: 70%;
+            gap: 8px;
+            width: 100%;
+            max-width: 150px;
         }
         
         .action-btn {
-            background: #333;
+            background: rgba(51, 51, 51, 0.9);
             color: #fff;
             border: 2px solid #555;
-            padding: 8px 12px;
+            padding: clamp(6px, 2vw, 8px) clamp(8px, 2.5vw, 12px);
             border-radius: 5px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: clamp(8px, 2vw, 10px);
             transition: all 0.3s ease;
             white-space: nowrap;
+            text-align: center;
+            line-height: 1.2;
         }
         
         .action-btn:hover {
-            background: #555;
+            background: rgba(85, 85, 85, 0.9);
             border-color: #777;
         }
         
         .dialogue-box {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 15px 20px;
+            padding: clamp(10px, 3vw, 15px) clamp(15px, 4vw, 20px);
             border-radius: 10px;
             border: 2px solid #444;
-            max-width: 80%;
+            max-width: 90%;
             min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             line-height: 1.4;
-        }
-        
-        .title {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            margin-bottom: 10px;
             z-index: 10;
         }
         
-        .bars {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 40px,
-                #333 40px,
-                #333 45px
-            );
-            pointer-events: none;
-            z-index: 1;
+        @media (max-width: 480px) {
+            .characters-container {
+                padding: 0 10px;
+            }
+            
+            .action-buttons {
+                max-width: 120px;
+            }
+            
+            .title {
+                font-size: 16px;
+                margin-top: 5px;
+            }
+        }
+        
+        @media (max-height: 600px) {
+            .title {
+                font-size: 14px;
+                margin-top: 5px;
+            }
+            
+            .dialogue-box {
+                min-height: 50px;
+                margin-bottom: 5px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="prison-cell">
-        <div class="bars"></div>
-        <div class="title">ЗЕЛЁНЫЙ СЛОНИК - ТЮРЕМНАЯ КАМЕРА</div>
-        
-        <div class="character bratishka" onclick="showDialogue('bratishka')">
-            БРАТИШКА<br>на шконке
-        </div>
-        
-        <div class="character pahom" onclick="showDialogue('pahom')">
-            ПАХОМ<br>в центре
-        </div>
-        
-        <div class="action-buttons bratishka-buttons">
-            <button class="action-btn" onclick="performAction('bratishka', 'stand')">Постоять как цапля</button>
-            <button class="action-btn" onclick="performAction('bratishka', 'story')">Рассказать историю</button>
-            <button class="action-btn" onclick="performAction('bratishka', 'joke')">Сказать шутку</button>
-        </div>
-        
-        <div class="action-buttons pahom-buttons">
-            <button class="action-btn" onclick="performAction('pahom', 'pushups')">Отжаться 20 раз</button>
-            <button class="action-btn" onclick="performAction('pahom', 'philosophy')">Философствовать</button>
-            <button class="action-btn" onclick="performAction('pahom', 'dance')">Станцевать</button>
-        </div>
-        
-        <div class="dialogue-box" id="dialogueBox">
-            Добро пожаловать в тюремную камеру! Кликайте на персонажей или кнопки для взаимодействия.
+        <div class="overlay"></div>
+        <div class="content">
+            <div class="title">ЗЕЛЁНЫЙ СЛОНИК - ТЮРЕМНАЯ КАМЕРА</div>
+            
+            <div class="characters-container">
+                <div class="character-section">
+                    <div class="character bratishka" onclick="showDialogue('bratishka')">
+                        БРАТИШКА<br>на шконке
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="performAction('bratishka', 'stand')">Постоять как цапля</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'story')">Рассказать историю</button>
+                        <button class="action-btn" onclick="performAction('bratishka', 'joke')">Сказать шутку</button>
+                    </div>
+                </div>
+                
+                <div class="character-section">
+                    <div class="character pahom" onclick="showDialogue('pahom')">
+                        ПАХОМ<br>в центре
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="performAction('pahom', 'pushups')">Отжаться 20 раз</button>
+                        <button class="action-btn" onclick="performAction('pahom', 'philosophy')">Философствовать</button>
+                        <button class="action-btn" onclick="performAction('pahom', 'dance')">Станцевать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dialogue-box" id="dialogueBox">
+                Добро пожаловать в тюремную камеру! Кликайте на персонажей или кнопки для взаимодействия.
+            </div>
         </div>
     </div>
 
@@ -268,9 +315,9 @@ const html = `<!DOCTYPE html>
             
             // Добавляем визуальный эффект
             const characterElement = document.querySelector('.' + character);
-            characterElement.style.transform = characterElement.style.transform.replace('scale(1)', 'scale(1.2)');
+            characterElement.style.transform = 'scale(1.2)';
             setTimeout(() => {
-                characterElement.style.transform = characterElement.style.transform.replace('scale(1.2)', 'scale(1)');
+                characterElement.style.transform = 'scale(1)';
             }, 300);
         }
         
@@ -280,6 +327,22 @@ const html = `<!DOCTYPE html>
             const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
             showDialogue(randomCharacter);
         }, 10000);
+        
+        // Предотвращаем зум на мобильных устройствах
+        document.addEventListener('touchstart', function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+        
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>`;
