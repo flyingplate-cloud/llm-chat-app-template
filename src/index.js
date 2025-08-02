@@ -75,7 +75,7 @@ const html = `<!DOCTYPE html>
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: url('https://images.unsplash.com/photo-1582750433449-648ed127bb54?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
+            background: url('https://i.imgur.com/JK9mN2Q.jpg') no-repeat center center;
             background-size: cover;
             display: flex;
             flex-direction: column;
