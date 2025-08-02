@@ -75,7 +75,7 @@ const html = `<!DOCTYPE html>
             position: relative;
             width: 100vw;
             height: 100vh;
-            background: url('https://i.imgur.com/JK9mN2Q.jpg') no-repeat center center;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Prison_cell_interior.jpg/1200px-Prison_cell_interior.jpg') no-repeat center center;
             background-size: cover;
             display: flex;
             flex-direction: column;
