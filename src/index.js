@@ -581,7 +581,7 @@ const gameHtml = `<!DOCTYPE html>
       let flashColor = 'rgba(0,0,0,0)';
       function screenFlash(r, g, b) {
         flashAlpha = 0.6;
-        flashColor = `rgba(${r}, ${g}, ${b}, `; // will append alpha
+        flashColor = 'rgba(' + r + ', ' + g + ', ' + b + ', ';
       }
 
       function drawBackground() {
@@ -716,7 +716,7 @@ const gameHtml = `<!DOCTYPE html>
       function drawUI() {
         const scoreStr = String(score).padStart(6, '0');
         const hearts = '❤'.repeat(Math.max(0, lives));
-        document.getElementById('status').textContent = `${scoreStr} | ${hearts}`;
+        document.getElementById('status').textContent = scoreStr + ' | ' + hearts;
 
         if (flashAlpha > 0) {
           ctx.fillStyle = flashColor + flashAlpha + ')';
